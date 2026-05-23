@@ -1,0 +1,1 @@
+console.log("Minecraft CPU Simulator Loaded");

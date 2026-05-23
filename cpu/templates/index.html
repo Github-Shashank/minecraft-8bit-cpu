@@ -1,0 +1,179 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Minecraft CPU Simulator</title>
+
+<link rel="stylesheet"
+      href="{% static 'css/style.css' %}">
+
+</head>
+
+<body>
+
+<div class="sidebar">
+
+    <h1>MC CPU</h1>
+
+    <div class="menu">
+
+        <button>Assembler</button>
+        <button>CPU State</button>
+        <button>Memory</button>
+
+    </div>
+
+</div>
+
+<div class="main">
+
+    <div class="topbar">
+
+        <h2>Minecraft CPU Simulator</h2>
+
+        <div class="controls">
+
+            <button>Assemble</button>
+            <button>Run</button>
+            <button>Step</button>
+
+        </div>
+
+    </div>
+
+    <div class="content">
+
+        <div class="editor-section">
+
+            <div class="editor-title">
+                Assembly Editor
+            </div>
+
+<textarea>{{ assembly_code }}</textarea>
+
+            <div class="output">
+
+                <h3>Binary Output</h3>
+
+                {% for line in binary_output %}
+
+                    <div class="binary-line">
+                        {{ line }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+        <div class="right-panel">
+
+            <!-- =================
+                ALU VISUALIZER
+            ================= -->
+
+            <div class="alu-panel">
+
+                <h2>ALU Visualizer</h2>
+
+                <!-- INPUTS -->
+
+                <div class="alu-inputs">
+
+                    <div class="alu-box">
+                        <label>Input A</label>
+                        <div class="alu-value">10101010</div>
+                    </div>
+
+                    <div class="alu-box">
+                        <label>Input B</label>
+                        <div class="alu-value">01010101</div>
+                    </div>
+
+                </div>
+
+                <!-- ALU CORE -->
+
+                <div class="alu-core">
+
+                    <div class="wire left-wire"></div>
+
+                    <div class="alu-chip">
+
+                        <div class="alu-title">
+                            ALU
+                        </div>
+
+                        <div class="alu-op">
+                            ADD
+                        </div>
+
+                    </div>
+
+                    <div class="wire right-wire"></div>
+
+                </div>
+
+                <!-- OUTPUT -->
+
+                <div class="alu-output">
+
+                    <label>Output</label>
+
+                    <div class="alu-result">
+                        11111111
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="cpu-state">
+
+                <h2>CPU State</h2>
+
+                <div class="register-grid">
+
+                    <div class="register">
+                        PC
+                        <span>00010110</span>
+                    </div>
+
+                    <div class="register">
+                        W
+                        <span>10101010</span>
+                    </div>
+
+                    <div class="register">
+                        Jump Register
+                        <span>00110011</span>
+                    </div>
+
+                    <div class="register">
+                        CMP
+                        <span>TRUE</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="{% static 'js/app.js' %}"></script>
+
+</body>
+</html>
