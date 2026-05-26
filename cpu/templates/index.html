@@ -57,7 +57,19 @@
                 Assembly Editor
             </div>
 
-<textarea>{{ assembly_code }}</textarea>
+<form method="POST">
+
+    {% csrf_token %}
+
+    <textarea name="code">{{ assembly_code }}</textarea>
+
+    <br><br>
+
+    <button type="submit">
+        Assemble
+    </button>
+
+</form>
 
             <div class="output">
 

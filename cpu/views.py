@@ -1,30 +1,27 @@
 from django.shortcuts import render
 
+from .assembler import assemble
+
+
 def index(request):
+
+    assembly_code = ""
+
+    binary_output = []
+
+    if request.method == "POST":
+
+        assembly_code = request.POST.get("code")
+
+        binary_output = assemble(
+            assembly_code
+        )
 
     context = {
 
-        "assembly_code": """
-INS W
-MEM VALUE 00010010
+        "assembly_code": assembly_code,
 
-INS LD
-
-INS JMP ONLY 00010010
-
-DM ALU ADD
-
-DM ARG R1R R2L
-
-DM CMP =
-""",
-
-        "binary_output": [
-            "0000 : 00111000",
-            "0001 : 00010010",
-            "0010 : 00110100",
-            "0011 : 00100000",
-        ]
+        "binary_output": binary_output,
     }
 
     return render(
