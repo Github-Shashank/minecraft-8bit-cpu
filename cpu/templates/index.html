@@ -5,187 +5,269 @@
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Minecraft CPU Simulator</title>
+    <title>Minecraft CPU Simulator</title>
 
-<link rel="stylesheet"
-      href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
 </head>
 
 <body>
 
-<div class="sidebar">
+    <div class="sidebar">
 
-    <h1>MC CPU</h1>
+        <h1>MC CPU</h1>
 
-    <div class="menu">
+        <div class="menu">
 
-        <button>Assembler</button>
-        <button>CPU State</button>
-        <button>Memory</button>
+            <button type="button">Assembler</button>
 
-    </div>
+            <button type="button">CPU State</button>
 
-</div>
-
-<div class="main">
-
-    <div class="topbar">
-
-        <h2>Minecraft CPU Simulator</h2>
-
-        <div class="controls">
-
-            <button>Assemble</button>
-            <button>Run</button>
-            <button>Step</button>
+            <button type="button">Memory</button>
 
         </div>
 
     </div>
 
-    <div class="content">
+    <!-- =========================
+         SINGLE MAIN FORM
+    ========================== -->
 
-        <div class="editor-section">
+    <form method="POST" class="main">
 
-            <div class="editor-title">
-                Assembly Editor
+        {% csrf_token %}
+
+        <!-- =====================
+             TOPBAR
+        ====================== -->
+
+        <div class="topbar">
+
+            <h2>Minecraft CPU Simulator</h2>
+
+            <div class="controls">
+
+                <button type="submit">
+                    Assemble
+                </button>
+
+                <button type="button">
+                    Run
+                </button>
+
+                <button type="button">
+                    Step
+                </button>
+
             </div>
 
-<form method="POST">
+        </div>
 
-    {% csrf_token %}
+        <!-- =====================
+             CONTENT
+        ====================== -->
 
-    <textarea name="code">{{ assembly_code }}</textarea>
+        <div class="content">
 
-    <br><br>
+            <!-- =====================
+                 LEFT SIDE
+            ====================== -->
 
-    <button type="submit">
-        Assemble
-    </button>
+            <div class="editor-section">
 
-</form>
+                <div class="editor-title">
+                    Assembly Editor
+                </div>
 
-            <div class="output">
+                <textarea id="editor" name="code" oninput="autoResize(this)">{{ assembly_code }}</textarea>
 
-                <h3>Binary Output</h3>
+                <!-- =====================
+                     OUTPUT
+                ====================== -->
 
-                {% for line in binary_output %}
+                <div class="output">
+
+                    <h3>Binary Output</h3>
+
+                    {% for line in binary_output %}
 
                     <div class="binary-line">
+
                         {{ line }}
+
                     </div>
 
-                {% endfor %}
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+            <!-- =====================
+                 RIGHT PANEL
+            ====================== -->
+
+            <div class="right-panel">
+
+                <!-- =====================
+                     ALU PANEL
+                ====================== -->
+
+                <div class="alu-panel">
+
+                    <h2>ALU Visualizer</h2>
+
+                    <div class="alu-inputs">
+
+                        <div class="alu-box">
+
+                            <label>Input A</label>
+
+                            <div class="alu-value">
+                                10101010
+                            </div>
+
+                        </div>
+
+                        <div class="alu-box">
+
+                            <label>Input B</label>
+
+                            <div class="alu-value">
+                                01010101
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- =====================
+                         ALU CORE
+                    ====================== -->
+
+                    <div class="alu-core">
+
+                        <div class="wire left-wire"></div>
+
+                        <div class="alu-chip">
+
+                            <div class="alu-title">
+                                ALU
+                            </div>
+
+                            <div class="alu-op">
+                                ADD
+                            </div>
+
+                        </div>
+
+                        <div class="wire right-wire"></div>
+
+                    </div>
+
+                    <!-- =====================
+                         OUTPUT
+                    ====================== -->
+
+                    <div class="alu-output">
+
+                        <label>Output</label>
+
+                        <div class="alu-result">
+                            11111111
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- =====================
+                     CPU STATE
+                ====================== -->
+
+                <div class="cpu-state">
+
+                    <h2>CPU State</h2>
+
+                    <div class="register-grid">
+
+                        <div class="register">
+
+                            PC
+
+                            <span>
+                                {{ cpu_state.PC }}
+                            </span>
+
+                        </div>
+
+                        <div class="register">
+
+                            W
+
+                            <span>
+                                {{ cpu_state.W }}
+                            </span>
+
+                        </div>
+
+                        <div class="register">
+
+                            Jump Register
+
+                            <span>
+                                {{ cpu_state.JUMP_REGISTER }}
+                            </span>
+
+                        </div>
+
+                        <div class="register">
+
+                            CMP
+
+                            <span>
+                                {{ cpu_state.CMP }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
 
             </div>
 
         </div>
 
-        <div class="right-panel">
+    </form>
 
-            <!-- =================
-                ALU VISUALIZER
-            ================= -->
+    <!-- =========================
+         AUTO RESIZE
+    ========================== -->
 
-            <div class="alu-panel">
+    <script>
 
-                <h2>ALU Visualizer</h2>
+        function autoResize(textarea) {
 
-                <!-- INPUTS -->
+            textarea.style.height = "auto";
 
-                <div class="alu-inputs">
+            textarea.style.height =
+                textarea.scrollHeight + "px";
+        }
 
-                    <div class="alu-box">
-                        <label>Input A</label>
-                        <div class="alu-value">10101010</div>
-                    </div>
+        window.onload = function () {
 
-                    <div class="alu-box">
-                        <label>Input B</label>
-                        <div class="alu-value">01010101</div>
-                    </div>
+            autoResize(
+                document.getElementById("editor")
+            );
+        };
 
-                </div>
-
-                <!-- ALU CORE -->
-
-                <div class="alu-core">
-
-                    <div class="wire left-wire"></div>
-
-                    <div class="alu-chip">
-
-                        <div class="alu-title">
-                            ALU
-                        </div>
-
-                        <div class="alu-op">
-                            ADD
-                        </div>
-
-                    </div>
-
-                    <div class="wire right-wire"></div>
-
-                </div>
-
-                <!-- OUTPUT -->
-
-                <div class="alu-output">
-
-                    <label>Output</label>
-
-                    <div class="alu-result">
-                        11111111
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="cpu-state">
-
-                <h2>CPU State</h2>
-
-                <div class="register-grid">
-
-                    <div class="register">
-                        PC
-                        <span>00010110</span>
-                    </div>
-
-                    <div class="register">
-                        W
-                        <span>10101010</span>
-                    </div>
-
-                    <div class="register">
-                        Jump Register
-                        <span>00110011</span>
-                    </div>
-
-                    <div class="register">
-                        CMP
-                        <span>TRUE</span>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-<script src="{% static 'js/app.js' %}"></script>
+    </script>
 
 </body>
+
 </html>
