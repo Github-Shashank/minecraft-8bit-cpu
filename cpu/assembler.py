@@ -1,3 +1,31 @@
+# =====================================
+# OPCODE TABLES
+# =====================================
+
+ALU_OPS = {
+
+    "ADD": "10000000",
+    "SUB": "10000001",
+
+}
+
+CMP_OPS = {
+
+    "=": "11100000",
+
+}
+
+INS_OPS = {
+
+    "RET": "00110000",
+
+}
+
+
+# =====================================
+# ASSEMBLER
+# =====================================
+
 def assemble(code):
 
     lines = code.splitlines()
@@ -13,26 +41,51 @@ def assemble(code):
         if not line:
             continue
 
-        binary = "00000000"
+        # Split instruction
+        tokens = line.split()
 
-        # VERY TEMPORARY TEST
+        # Example:
+        # DM ALU ADD
+        #
+        # tokens becomes:
+        # ['DM', 'ALU', 'ADD']
 
-        if "ADD" in line:
-            binary = "10000000"
+        if tokens[0] == "DM":
 
-        elif "SUB" in line:
-            binary = "10000001"
+            if tokens[1] == "ALU":
 
-        elif "JMP" in line:
-            binary = "00100000"
+                operation = tokens[2]
 
-        elif "CALL" in line:
-            binary = "00101000"
+                binary = ALU_OPS[operation]
 
-        output.append(
-            f"{address:04d} : {binary}"
-        )
+                output.append(
+                    f"{address:04d} : {binary}"
+                )
 
-        address += 1
+                address += 1
+
+            elif tokens[1] == "CMP":
+
+                operation = tokens[2]
+
+                binary = CMP_OPS[operation]
+
+                output.append(
+                    f"{address:04d} : {binary}"
+                )
+
+                address += 1
+
+        elif tokens[0] == "INS":
+
+            if tokens[1] == "RET":
+
+                binary = INS_OPS["RET"]
+
+                output.append(
+                    f"{address:04d} : {binary}"
+                )
+
+                address += 1
 
     return output
