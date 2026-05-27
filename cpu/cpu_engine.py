@@ -1,3 +1,9 @@
+DATA_MEMORY = [
+
+    "00000000"
+    for _ in range(32)
+
+]
 # ==========================================
 # CPU STATE
 # ==========================================
@@ -8,8 +14,6 @@ cpu = {
 
     "CENTER": "00000000",
 
-    "W": "00000000",
-
     "CMP": False,
 
     "JUMP_REGISTER": "00000000",
@@ -17,6 +21,8 @@ cpu = {
     "R1R": "00000000",
 
     "R1L": "00000000",
+
+    "DATA_MEMORY": DATA_MEMORY,
 }
 
 
@@ -29,8 +35,6 @@ def reset_cpu():
     cpu["PC"] = 0
 
     cpu["CENTER"] = "00000000"
-
-    cpu["W"] = "00000000"
 
     cpu["CMP"] = False
 
@@ -62,16 +66,17 @@ def execute_program(lines):
         tokens = line.split()
 
         # ==================================
-        # MEM VALUE
+        # MEM
         # ==================================
 
         if tokens[0] == "MEM":
 
-            if tokens[1] == "VALUE":
+            value = int(tokens[1])
 
-                value = tokens[2]
-
-                cpu["CENTER"] = value
+            cpu["CENTER"] = format(
+                value,
+                "08b"
+            )
 
         # ==================================
         # INS
@@ -80,12 +85,20 @@ def execute_program(lines):
         elif tokens[0] == "INS":
 
             # ------------------------------
-            # W
+            # NOP
             # ------------------------------
 
-            if tokens[1] == "W":
+            if tokens[1] == "NOP":
 
-                cpu["W"] = cpu["CENTER"]
+                pass
+
+            # ------------------------------
+            # HLT
+            # ------------------------------
+
+            elif tokens[1] == "HLT":
+
+                break
 
             # ------------------------------
             # LD
@@ -93,7 +106,20 @@ def execute_program(lines):
 
             elif tokens[1] == "LD":
 
-                cpu["JUMP_REGISTER"] = cpu["CENTER"]
+                cpu["CENTER"] = format(
+                    cpu["PC"],
+                    "08b"
+                )
+
+            # ------------------------------
+            # W
+            # ------------------------------
+
+            elif tokens[1] == "W":
+
+                cpu["JUMP_REGISTER"] = (
+                    cpu["CENTER"]
+                )
 
             # ------------------------------
             # JMP
@@ -101,12 +127,46 @@ def execute_program(lines):
 
             elif tokens[1] == "JMP":
 
-                if tokens[2] == "ONLY":
+                mode = tokens[2]
+
+                # JMP ONLY
+
+                if mode == "ONLY":
 
                     cpu["PC"] = int(
                         cpu["JUMP_REGISTER"],
                         2
                     )
+
+                # JMP IF
+
+                elif mode == "IF":
+
+                    if cpu["CMP"]:
+
+                        cpu["PC"] = int(
+                            cpu["JUMP_REGISTER"],
+                            2
+                        )
+
+                # JMP IF NOT
+
+                elif mode == "IF_NOT":
+
+                    if not cpu["CMP"]:
+
+                        cpu["PC"] = int(
+                            cpu["JUMP_REGISTER"],
+                            2
+                        )
+
+            # ------------------------------
+            # CALL
+            # ------------------------------
+
+            elif tokens[1] == "CALL":
+
+                pass
 
             # ------------------------------
             # RET
@@ -116,6 +176,38 @@ def execute_program(lines):
 
                 pass
 
+
+        # ==================================
+        # DATA
+        # ==================================
+
+        elif tokens[0] == "DATA":
+
+            operation = tokens[1]
+
+            address = int(tokens[2])
+
+            # ------------------------------
+            # DATA LD
+            # ------------------------------
+
+            if operation == "LD":
+
+                cpu["CENTER"] = (
+                    cpu["DATA_MEMORY"][address]
+                )
+
+        
+            # ------------------------------
+            # DATA W
+            # ------------------------------
+
+            elif operation == "W":
+
+                cpu["DATA_MEMORY"][address] = (
+                    cpu["CENTER"]
+                )
+            
         # ==================================
         # PC INCREMENT
         # ==================================

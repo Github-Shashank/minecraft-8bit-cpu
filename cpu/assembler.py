@@ -67,22 +67,70 @@ def assemble(code):
 
             if tokens[0] == "MEM":
 
-                if tokens[1] == "VALUE":
+                value = int(tokens[1])
 
-                    value = tokens[2]
+                if value < 0 or value > 63:
 
-                    output.append(
-                        f"{address:04d} : {value}"
+                    raise Exception(
+                        "MEM value must be 0-63"
                     )
 
-                    address += 1
+                value_bits = format(
+                    value,
+                    "06b"
+                )
+
+                binary = "11" + value_bits
+
+                output.append(
+                    f"{address:04d} : {binary}"
+                )
+
+                address += 1
+
+            # =====================================
+            # DATA
+            # =====================================
+
+            elif tokens[0] == "DATA":
+
+                operation = tokens[1]
+
+                address_value = int(tokens[2])
+
+                if address_value < 0 or address_value > 31:
+
+                    raise Exception(
+                        "DATA address must be 0-31"
+                    )
+
+                address_bits = format(
+                    address_value,
+                    "05b"
+                )
+
+                # DATA LD
+                if operation == "LD":
+
+                    binary = "010" + address_bits
+
+                # DATA W
+                elif operation == "W":
+
+                    binary = "011" + address_bits
 
                 else:
 
                     raise Exception(
-                        "Unknown MEM instruction"
+                        "Unknown DATA operation"
                     )
 
+                output.append(
+                    f"{address:04d} : {binary}"
+                )
+
+                address += 1
+            
             # =====================================
             # INS
             # =====================================
